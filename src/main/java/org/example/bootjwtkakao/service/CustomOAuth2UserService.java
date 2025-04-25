@@ -30,6 +30,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private final DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
     private final KakaoUserRepository kakaoUserRepository;
 
+    @SuppressWarnings("unchecked")
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
