@@ -9,6 +9,7 @@ import lombok.extern.java.Log;
 import org.example.bootjwtkakao.auth.JwtTokenProvider;
 import org.example.bootjwtkakao.model.entity.KakaoUser;
 import org.example.bootjwtkakao.model.repository.KakaoUserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -18,6 +19,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.List;
@@ -60,6 +62,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     public static class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         private final JwtTokenProvider jwtTokenProvider;
 
+        @Value("${front-end.redirect}")
+        private String frontEndRedirect;
+
         @Override
         public void onAuthenticationSuccess(HttpServletRequest req,
                                             HttpServletResponse res,
@@ -68,10 +73,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             String id = oAuth2User.getAttributes().get("id").toString();
             String username = "kakao_%s".formatted(id);
             String token = jwtTokenProvider.generateToken(new UsernamePasswordAuthenticationToken(username, ""), List.of("KAKAO"));
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, String> result = Map.of("token", token);
-            res.setContentType("application/json;charset=UTF-8");
-            res.getWriter().write(objectMapper.writeValueAsString(result));
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            Map<String, String> result = Map.of("token", token);
+//            res.setContentType("application/json;charset=UTF-8");
+//            res.getWriter().write(objectMapper.writeValueAsString(result));
+            // value -> redirect url
+            String redirectUrl = UriComponentsBuilder
+                    .fromUriString(frontEndRedirect)
+                    .queryParam("token", token)
+                    .build().toUriString();
+            res.sendRedirect(redirectUrl);
         }
     }
 }
