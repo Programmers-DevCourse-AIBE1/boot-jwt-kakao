@@ -36,7 +36,11 @@ public class SecurityConfig {
                 // .cors
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 상태 해제
                 .authorizeHttpRequests(
-                auth -> auth.anyRequest().permitAll()
+                auth ->
+                        auth
+                                .requestMatchers("/api/data/**")
+                                    .authenticated()
+                                .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth -> oauth
 //                        .loginPage("/login/oauth2") // 이건 커스텀으로 할 때...
