@@ -16,6 +16,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.Collections;
 
@@ -34,6 +35,16 @@ public class SecurityConfig {
                 // .csrf
                 .csrf(AbstractHttpConfigurer::disable) // POST, PUT...
                 // .cors
+                .cors(cors -> cors.configurationSource(
+                        req -> {
+                            CorsConfiguration config = new CorsConfiguration();
+                            config.setAllowedOrigins(Collections.singletonList("*"));
+                            config.setAllowedMethods(Collections.singletonList("*"));
+                            config.setAllowedHeaders(Collections.singletonList("*"));
+                            config.setAllowCredentials(false);
+                            return config;
+                        }
+                ))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 상태 해제
                 .authorizeHttpRequests(
                 auth ->
