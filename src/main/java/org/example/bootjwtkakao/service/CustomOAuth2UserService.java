@@ -51,6 +51,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     KakaoUser newUser = new KakaoUser();
                     newUser.setUsername(username);
                     newUser.setName(nickname);
+                    newUser.setRole("KAKAO"); // 빼먹은거
                     return kakaoUserRepository.save(newUser);
                 });
         log.info(kakaoUser.toString());
